@@ -1,4 +1,4 @@
-from pydantic import BaseModel,validate_email
+from pydantic import BaseModel, EmailStr
 
 class UserResponse(BaseModel):
     id: int
@@ -10,7 +10,7 @@ class UserResponse(BaseModel):
 
 class UserCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
 
     class Config:
         from_attributes = True
