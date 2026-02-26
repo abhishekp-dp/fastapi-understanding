@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import user
+
 from app.models.users import User  # ✅ correct model import
 
 
@@ -26,3 +28,14 @@ def create_user(db: Session, name: str, email: str):
 
     # Step 5: Return inserted user
     return new_user
+
+#Delete particular user
+def delete_user(user_id: int,db):
+
+    userid=db.query(User).filter(User.id == user_id).first()
+    if not userid:
+         return None
+    db.delete(userid)
+    db.commit()
+
+    return userid

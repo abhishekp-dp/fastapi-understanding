@@ -7,6 +7,7 @@ from app.schemas import users as schemas
 from app.database import get_db  # your DB session function under database
 from app.crud.users import create_user
 from app.crud.users import get_user_by_id
+from app.crud.users import delete_user
 
 
 router = APIRouter(
@@ -31,4 +32,12 @@ def getuser(user_id : int , db: Session = Depends(get_db)):
     user = get_user_by_id(db,user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.delete("/{user_id}", response_model=schemas.UserResponse)
+def deleteUser(user_id : int , db: Session = Depends(get_db)):
+    user = delete_user(user_id,db)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return user
