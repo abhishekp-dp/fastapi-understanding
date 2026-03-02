@@ -7,7 +7,7 @@ from app.schemas import users as schemas
 from app.database import get_db  # your DB session function under database
 from app.crud.users import create_user, get_user_by_company
 from app.crud.users import get_user_by_id
-from crud.company import get_all_company
+from app.crud.company import get_all_company
 
 router = APIRouter(
     prefix="/users",
@@ -24,7 +24,7 @@ def read_users(db: Session = Depends(get_db)):
 
 @router.post("/createuser/")
 def createusers(name: str, email: str, company_id: int, db: Session = Depends(get_db)):
-
+    companylists=get_all_company(db)
     return create_user(db, name, email,company_id)
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)

@@ -11,6 +11,7 @@ class UserResponse(BaseModel):
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
+    company_id: int
 
     class Config:
         from_attributes = True
