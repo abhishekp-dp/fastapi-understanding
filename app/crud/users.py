@@ -12,9 +12,9 @@ def get_all_users(db: Session):
     return db.query(User).all()
 
 
-def create_user(db: Session, name: str, email: str):
+def create_user(db: Session, name: str, email: str, company_id: int):
     # Step 1: Create object
-    new_user = User(name=name, email=email)
+    new_user = User(name=name, email=email,company_id=company_id)
 
     # Step 2: Add to session
     db.add(new_user)
