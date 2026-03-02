@@ -5,7 +5,7 @@ from sqlalchemy.sql import crud
 from app.crud import users as crud_user
 from app.schemas import users as schemas
 from app.database import get_db  # your DB session function under database
-from app.crud.users import create_user
+from app.crud.users import create_user, get_user_by_company
 from app.crud.users import get_user_by_id
 
 
@@ -32,3 +32,10 @@ def getuser(user_id : int , db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.post("/{company_id}/")
+def getusers_company(company_id: int,db: Session = Depends(get_db)):
+    user_company=get_user_by_company(db, company_id)
+    if not user_company:
+        raise HTTPException(status_code=404, detail="User with this company not found")
+    return user_company

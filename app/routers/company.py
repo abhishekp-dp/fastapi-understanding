@@ -26,3 +26,5 @@ def get_company_id(company_id : int , db: Session = Depends(get_db)):
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
     return company
+
+

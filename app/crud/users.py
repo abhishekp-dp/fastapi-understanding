@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.users import User  # ✅ correct model import
+from app.models.company import Company
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -26,3 +27,13 @@ def create_user(db: Session, name: str, email: str):
 
     # Step 5: Return inserted user
     return new_user
+
+def get_user_by_company (db: Session, company_id: int):
+    companyusers = (
+        db.query(User)
+        .join(Company, User.company_id == Company.id)
+        .filter(Company.id == company_id)
+        .all()
+    )
+
+    return companyusers
