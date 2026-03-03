@@ -31,6 +31,7 @@ def createusers(name: str, email: str, company_id: int, db: Session = Depends(ge
             status_code=400,
             detail="Company does not exist"
         )
+
     return create_user(db, name, email,company_id)
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
