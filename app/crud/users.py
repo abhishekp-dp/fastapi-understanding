@@ -37,3 +37,8 @@ def get_user_by_company (db: Session, company_id: int):
     )
 
     return companyusers
+
+def delete_user(db: Session, user_id: int):
+    user_delete = db.query(User).filter(User.id == user_id).first()
+    db.delete(user_delete)
+    db.commit()

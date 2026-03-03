@@ -23,3 +23,8 @@ def create_company(db: Session, id: int, company_name: str, location: str):
 
     # Step 5: Return inserted user
     return new_company
+
+def delete_company(db: Session, company_id: int):
+    company_delete = db.query(Company).filter(Company.id == company_id).first()
+    db.delete(company_delete)
+    db.commit()

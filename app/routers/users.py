@@ -5,10 +5,10 @@ from sqlalchemy.sql import crud
 from app.crud import users as crud_user
 from app.schemas import users as schemas
 from app.database import get_db  # your DB session function under database
-from app.crud.users import create_user, get_user_by_company
+from app.crud.users import create_user, get_user_by_company, delete_user
 from app.crud.users import get_user_by_id
 from app.crud.company import get_all_company
-from app.models import Company
+from app.models import Company,User
 
 router = APIRouter(
     prefix="/users",
@@ -46,3 +46,13 @@ def getusers_company(company_id: int,db: Session = Depends(get_db)):
     if not user_company:
         raise HTTPException(status_code=404, detail="User with this company not found")
     return user_company
+
+
+@router.delete("/{user_id}/")
+def deleteuser(user_id: int,db: Session = Depends(get_db)):
+    user_exist = db.query(User).filter(User.id == user_id).first()
+    if not user_exist:
+        raise HTTPException(status_code=404, detail="User doesn't exist")
+
+    delete_user(db, user_id)
+    return {"User Deleted Successfully"}
