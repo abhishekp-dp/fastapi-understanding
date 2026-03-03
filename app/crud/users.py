@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
 
 from app.models.users import User  # ✅ correct model import
+from app.models.company import Company
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -13,9 +14,9 @@ def get_all_users(db: Session):
     return db.query(User).all()
 
 
-def create_user(db: Session, name: str, email: str):
+def create_user(db: Session, name: str, email: str, company_id: int):
     # Step 1: Create object
-    new_user = User(name=name, email=email)
+    new_user = User(name=name, email=email,company_id=company_id)
 
     # Step 2: Add to session
     db.add(new_user)
@@ -29,13 +30,17 @@ def create_user(db: Session, name: str, email: str):
     # Step 5: Return inserted user
     return new_user
 
-#Delete particular user
-def delete_user(user_id: int,db):
+def get_user_by_company (db: Session, company_id: int):
+    companyusers = (
+        db.query(User)
+        .join(Company, User.company_id == Company.id)
+        .filter(Company.id == company_id)
+        .all()
+    )
 
-    userid=db.query(User).filter(User.id == user_id).first()
-    if not userid:
-         return None
-    db.delete(userid)
+    return companyusers
+
+def delete_user(db: Session, user_id: int):
+    user_delete = db.query(User).filter(User.id == user_id).first()
+    db.delete(user_delete)
     db.commit()
-
-    return userid
