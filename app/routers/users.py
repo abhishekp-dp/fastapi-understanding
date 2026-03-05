@@ -26,10 +26,16 @@ def read_users(db: Session = Depends(get_db)):
 @router.post("/createuser/")
 def createusers(name: str, email: str, company_id: int, db: Session = Depends(get_db)):
     company= db.query(Company).filter(Company.id==company_id).first()
+    email_exists = db.query(User).filter(User.email==email).first()
     if not company:
         raise HTTPException(
             status_code=400,
             detail="Company does not exist"
+        )
+    if email_exists:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exist"
         )
 
     return create_user(db, name, email,company_id)
