@@ -7,7 +7,7 @@ from app.crud import company as crud_company
 from app.schemas import company as schemas
 from app.database import get_db  # your DB session function under database
 from app.crud.company import get_all_company, get_company_by_id, create_company, delete_company, crud_get_users_by_company
-from app.models import Company
+from app.models import Company,User
 
 router = APIRouter(
     prefix="/company",
@@ -30,14 +30,14 @@ def get_company_id(company_id : int , db: Session = Depends(get_db)):
 
 
 @router.post("/createcompany/")
-def createcompany(id: int, company_name: str, location: str, db: Session = Depends(get_db)):
-    company= db.query(Company).filter(Company.id==id).first()
+def createcompany(company_name: str, location: str, db: Session = Depends(get_db)):
+    company= db.query(Company).filter(Company.company_name==company_name, Company.location==location).first()
     if company:
         raise HTTPException(
             status_code=400,
-            detail="Company already exist"
+            detail="Company already exist at provided location"
         )
-    return create_company(db,id,company_name,location)
+    return create_company(db,company_name,location)
 
 
 @router.delete("/{company_id}/")
@@ -45,6 +45,10 @@ def deletecompany(company_id: int,db: Session = Depends(get_db)):
     company_exist = db.query(Company).filter(Company.id == company_id).first()
     if not company_exist:
         raise HTTPException(status_code=404, detail="Company doesn't exist")
+
+    user_exist = db.query(User).all()
+    if user_exist:
+        raise HTTPException(status_code=400, detail="User already exists")
 
     delete_company(db, company_id)
     return {"Company Deleted Successfully"}
