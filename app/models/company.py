@@ -7,4 +7,4 @@ class Company(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     company_name = Column(String(100), nullable=False)
-    location = Column(String(100), unique=True, index=True)
+    location = Column(String(100), unique=False, index=True)
