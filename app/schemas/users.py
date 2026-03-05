@@ -4,6 +4,7 @@ class UserResponse(BaseModel):
     id: int
     name: str
     email: str
+    company_id: int
 
     class Config:
         from_attributes = True

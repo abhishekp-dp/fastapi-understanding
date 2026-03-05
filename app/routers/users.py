@@ -63,3 +63,5 @@ def deleteuser(user_id: int,db: Session = Depends(get_db)):
 
     delete_user(db, user_id)
     return {"User Deleted Successfully"}
+
+
