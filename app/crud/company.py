@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.company import Company  # ✅ correct model import
+from app.models.users import User
 
 
 def get_all_company(db: Session):
@@ -28,3 +29,7 @@ def delete_company(db: Session, company_id: int):
     company_delete = db.query(Company).filter(Company.id == company_id).first()
     db.delete(company_delete)
     db.commit()
+
+
+def crud_get_users_by_company(db: Session, company_id: int):
+    return db.query(User).filter(User.company_id == company_id).all()
