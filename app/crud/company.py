@@ -9,9 +9,9 @@ def get_all_company(db: Session):
 def get_company_by_id(db: Session, company_id: int):
     return db.query(Company).filter(Company.id == company_id).first()
 
-def create_company(db: Session, id: int, company_name: str, location: str):
+def create_company(db: Session, company_name: str, location: str):
     # Step 1: Create object
-    new_company = Company(id=id, company_name=company_name,location=location)
+    new_company = Company(company_name=company_name,location=location)
 
     # Step 2: Add to session
     db.add(new_company)

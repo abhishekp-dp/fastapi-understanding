@@ -30,14 +30,14 @@ def get_company_id(company_id : int , db: Session = Depends(get_db)):
 
 
 @router.post("/createcompany/")
-def createcompany(id: int, company_name: str, location: str, db: Session = Depends(get_db)):
-    company= db.query(Company).filter(Company.id==id).first()
+def createcompany(company_name: str, location: str, db: Session = Depends(get_db)):
+    company= db.query(Company).filter(Company.company_name==company_name, Company.location==location).first()
     if company:
         raise HTTPException(
             status_code=400,
-            detail="Company already exist"
+            detail="Company already exist at provided location"
         )
-    return create_company(db,id,company_name,location)
+    return create_company(db,company_name,location)
 
 
 @router.delete("/{company_id}/")
