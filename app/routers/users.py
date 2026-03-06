@@ -44,7 +44,7 @@ def createusers(name: str, email: EmailStr, company_id: int,role_id: int=1,curre
 
     admin_check(db,current_user_id)
 
-    return create_user(db,name, email,company_id,role_id,current_user_id)
+    return create_user(db,name, email,company_id,role_id)
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def getuser(user_id : int , db: Session = Depends(get_db)):
