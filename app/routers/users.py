@@ -11,6 +11,7 @@ from app.crud.users import get_user_by_id
 from app.crud.company import get_all_company
 from app.models import Company,User
 from app.crud.users import delete_user
+from app.dependencies.admin_check import admin_check
 
 
 router = APIRouter(
@@ -27,7 +28,7 @@ def read_users(db: Session = Depends(get_db)):
 
 
 @router.post("/createuser/")
-def createusers(name: str, email: EmailStr, company_id: int, db: Session = Depends(get_db)):
+def createusers(name: str, email: EmailStr, company_id: int,role_id: int=1,current_user_id: int=1,db: Session = Depends(get_db)):
     company= db.query(Company).filter(Company.id==company_id).first()
     email_exists = db.query(User).filter(User.email==email).first()
     if not company:
@@ -41,7 +42,9 @@ def createusers(name: str, email: EmailStr, company_id: int, db: Session = Depen
             detail="Email already exist"
         )
 
-    return create_user(db, name, email,company_id)
+    admin_check(db,current_user_id)
+
+    return create_user(db,name, email,company_id,role_id,current_user_id)
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def getuser(user_id : int , db: Session = Depends(get_db)):
@@ -59,11 +62,12 @@ def getusers_company(company_id: int,db: Session = Depends(get_db)):
 
 
 @router.delete("/{user_id}/")
-def deleteuser(user_id: int,db: Session = Depends(get_db)):
+def deleteuser(user_id: int,  current_user_id: int=1 , db: Session = Depends(get_db)):
     user_exist = db.query(User).filter(User.id == user_id).first()
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")
 
+    admin_check(db, current_user_id)
     delete_user(db, user_id)
     return {"User Deleted Successfully"}
 
