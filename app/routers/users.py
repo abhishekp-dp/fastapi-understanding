@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import crud
 
@@ -26,7 +27,7 @@ def read_users(db: Session = Depends(get_db)):
 
 
 @router.post("/createuser/")
-def createusers(name: str, email: str, company_id: int, db: Session = Depends(get_db)):
+def createusers(name: str, email: EmailStr, company_id: int, db: Session = Depends(get_db)):
     company= db.query(Company).filter(Company.id==company_id).first()
     email_exists = db.query(User).filter(User.email==email).first()
     if not company:
