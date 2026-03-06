@@ -8,3 +8,4 @@ class User(Base):
     company_id = Column(Integer, ForeignKey("company.id"), nullable=False)
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True)
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
