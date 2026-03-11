@@ -13,7 +13,6 @@ class CompanyResponse(BaseModel):
         from_attributes = True
 
 class CompanyCreate(BaseModel):
-    id : int
     company_name: str
     location : str
 
