@@ -12,7 +12,7 @@ from app.crud.company import get_all_company
 from app.models import Company,User
 from app.crud.users import delete_user
 from app.dependencies.admin_check import admin_check
-
+from app.schemas.users import UserCreate
 
 router = APIRouter(
     prefix="/users",
@@ -28,9 +28,9 @@ def read_users(db: Session = Depends(get_db)):
 
 
 @router.post("/createuser/")
-def createusers(name: str, email: EmailStr, company_id: int,role_id: int=1,current_user_id: int=1,db: Session = Depends(get_db)):
-    company= db.query(Company).filter(Company.id==company_id).first()
-    email_exists = db.query(User).filter(User.email==email).first()
+def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
+    company= db.query(Company).filter(Company.id==usercreate.company_id).first()
+    email_exists = db.query(User).filter(User.email==usercreate.email).first()
     if not company:
         raise HTTPException(
             status_code=400,
@@ -42,9 +42,9 @@ def createusers(name: str, email: EmailStr, company_id: int,role_id: int=1,curre
             detail="Email already exist"
         )
 
-    admin_check(db,current_user_id)
+    #admin_check(db,current_user_id)
 
-    return create_user(db,name, email,company_id,role_id)
+    return create_user(db,usercreate)
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def getuser(user_id : int , db: Session = Depends(get_db)):

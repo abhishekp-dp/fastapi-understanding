@@ -3,6 +3,7 @@ from sqlalchemy.sql.functions import user
 
 from app.models.users import User  # ✅ correct model import
 from app.models.company import Company
+from app.schemas.users import UserCreate
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -14,9 +15,9 @@ def get_all_users(db: Session):
     return db.query(User).all()
 
 
-def create_user(db: Session, name: str, email: str, company_id: int,role_id: int=1):
+def create_user(db: Session, usercreate: UserCreate):
     # Step 1: Create object
-    new_user = User(name=name, email=email,company_id=company_id,role_id=role_id)
+    new_user = User(name=usercreate.name, email=usercreate.email,company_id=usercreate.company_id,role_id=usercreate.role_id)
 
     # Step 2: Add to session
     db.add(new_user)
