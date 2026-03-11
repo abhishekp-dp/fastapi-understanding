@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.company import Company  # ✅ correct model import
 from app.models.users import User
+from app.schemas.company import CompanyCreate
 
 
 def get_all_company(db: Session):
@@ -9,9 +10,9 @@ def get_all_company(db: Session):
 def get_company_by_id(db: Session, company_id: int):
     return db.query(Company).filter(Company.id == company_id).first()
 
-def create_company(db: Session, company_name: str, location: str):
+def create_company(db: Session, company: CompanyCreate):
     # Step 1: Create object
-    new_company = Company(company_name=company_name,location=location)
+    new_company = Company(company_name=company.company_name,location=company.location)
 
     # Step 2: Add to session
     db.add(new_company)

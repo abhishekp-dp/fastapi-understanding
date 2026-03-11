@@ -8,6 +8,7 @@ from app.schemas import company as schemas
 from app.database import get_db  # your DB session function under database
 from app.crud.company import get_all_company, get_company_by_id, create_company, delete_company, crud_get_users_by_company
 from app.models import Company,User
+from app.schemas.company import CompanyCreate
 
 router = APIRouter(
     prefix="/company",
@@ -30,14 +31,14 @@ def get_company_id(company_id : int , db: Session = Depends(get_db)):
 
 
 @router.post("/createcompany/")
-def createcompany(company_name: str, location: str, db: Session = Depends(get_db)):
-    company= db.query(Company).filter(Company.company_name==company_name, Company.location==location).first()
-    if company:
+def createcompany(company: CompanyCreate, db: Session = Depends(get_db)):
+    existing_company= db.query(Company).filter(Company.company_name==company.company_name, Company.location==company.location).first()
+    if existing_company:
         raise HTTPException(
             status_code=400,
             detail="Company already exist at provided location"
         )
-    return create_company(db,company_name,location)
+    return create_company(db,company)
 
 
 @router.delete("/{company_id}/")
