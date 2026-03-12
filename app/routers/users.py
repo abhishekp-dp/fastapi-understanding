@@ -9,10 +9,11 @@ from app.database import get_db  # your DB session function under database
 from app.crud.users import create_user, get_user_by_company, delete_user
 from app.crud.users import get_user_by_id
 from app.crud.company import get_all_company
-from app.models import Company,User
+from app.models import Company,User,Roles
 from app.crud.users import delete_user
 from app.dependencies.admin_check import admin_check
 from app.schemas.users import UserCreate
+
 
 router = APIRouter(
     prefix="/users",
@@ -31,6 +32,7 @@ def read_users(db: Session = Depends(get_db)):
 def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
     company= db.query(Company).filter(Company.id==usercreate.company_id).first()
     email_exists = db.query(User).filter(User.email==usercreate.email).first()
+    user_role = db.query(Roles).filter(Roles.id==usercreate.role_id).first()
     if not company:
         raise HTTPException(
             status_code=400,
@@ -40,6 +42,11 @@ def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=400,
             detail="Email already exist"
+        )
+    if not user_role:
+        raise HTTPException(
+            status_code=400,
+            detail="User role does not exist"
         )
 
     #admin_check(db,current_user_id)
