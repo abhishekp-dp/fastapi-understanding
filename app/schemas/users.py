@@ -13,6 +13,7 @@ class UserResponse(BaseModel):
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
+    password: str
     company_id: int
     role_id: int
 

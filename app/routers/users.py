@@ -67,7 +67,7 @@ def deleteuser(user_id: int,  current_user_id: int=1 , db: Session = Depends(get
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")
 
-    admin_check(db, current_user_id)
+    #admin_check(db, current_user_id)
     delete_user(db, user_id)
     return {"User Deleted Successfully"}
 

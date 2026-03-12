@@ -4,6 +4,7 @@ from sqlalchemy.sql.functions import user
 from app.models.users import User  # ✅ correct model import
 from app.models.company import Company
 from app.schemas.users import UserCreate
+from app.core.security import hash_password
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -16,8 +17,14 @@ def get_all_users(db: Session):
 
 
 def create_user(db: Session, usercreate: UserCreate):
+
+    hashed_password = hash_password(str(usercreate.password))
     # Step 1: Create object
-    new_user = User(name=usercreate.name, email=usercreate.email,company_id=usercreate.company_id,role_id=usercreate.role_id)
+    new_user = User(name=usercreate.name,
+                    email=usercreate.email,
+                    company_id=usercreate.company_id,
+                    role_id=usercreate.role_id,
+                    password=hashed_password)
 
     # Step 2: Add to session
     db.add(new_user)
