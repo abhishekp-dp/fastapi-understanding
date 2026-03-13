@@ -13,7 +13,7 @@ from app.models import Company,User,Roles
 from app.crud.users import delete_user
 from app.dependencies.admin_check import admin_check
 from app.schemas.users import UserCreate
-
+from app.dependencies.auth_dependency import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -69,7 +69,10 @@ def getusers_company(company_id: int,db: Session = Depends(get_db)):
 
 
 @router.delete("/{user_id}/")
-def deleteuser(user_id: int,  current_user_id: int=1 , db: Session = Depends(get_db)):
+def deleteuser(user_id: int,  current_user_id: int=1 , db: Session = Depends(get_db),current_user=Depends(get_current_user)):
+
+    if current_user["role"] != "Admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
     user_exist = db.query(User).filter(User.id == user_id).first()
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")
