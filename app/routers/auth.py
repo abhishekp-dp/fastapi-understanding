@@ -1,14 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.crud import company as crud_company
-from app.schemas import company as schemas
 from app.database import get_db  # your DB session function under database
-from app.crud.company import get_all_company, get_company_by_id, create_company, delete_company, crud_get_users_by_company
-from app.models import Company,User
-from app.schemas.company import CompanyCreate
 from app.schemas.auth_schema import LoginRequest
 from app.crud.crud_auth import get_user_by_email
 from app.core.security import verify_password
+from app.core.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -23,10 +19,21 @@ def login(logindata: LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(logindata.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid password")
 
+    token = create_access_token(
+        {
+            "user_id": user.id,
+            "role_id": user.role_id,
+            "company_id": user.company_id
+        }
+    )
+
     return {
         "message": "Login successful",
         "user_id": user.id,
         "role_id": user.role_id,
-        "company_id": user.company_id
+        "company_id": user.company_id,
+        "access_token": token,
+        "token_type": "bearer"
     }
+
 
