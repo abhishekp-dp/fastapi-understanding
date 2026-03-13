@@ -18,6 +18,7 @@ def get_all_users(db: Session):
 
 def create_user(db: Session, usercreate: UserCreate):
 
+    # password will be hashed before storing
     hashed_password = hash_password(str(usercreate.password))
     # Step 1: Create object
     new_user = User(name=usercreate.name,
