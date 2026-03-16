@@ -9,6 +9,7 @@ from app.database import get_db  # your DB session function under database
 from app.crud.company import get_all_company, get_company_by_id, create_company, delete_company, crud_get_users_by_company
 from app.models import Company,User
 from app.schemas.company import CompanyCreate
+from app.dependencies.auth_dependency import get_current_user
 
 router = APIRouter(
     prefix="/company",
@@ -31,7 +32,11 @@ def get_company_id(company_id : int , db: Session = Depends(get_db)):
 
 
 @router.post("/createcompany/")
-def createcompany(company: CompanyCreate, db: Session = Depends(get_db)):
+def createcompany(company: CompanyCreate, db: Session = Depends(get_db),current_user=Depends(get_current_user)):
+
+    if current_user["role_id"] != 2:
+        raise HTTPException(status_code=403, detail="Only Admin can Create Company")
+
     existing_company= db.query(Company).filter(Company.company_name==company.company_name, Company.location==company.location).first()
     if existing_company:
         raise HTTPException(
@@ -42,12 +47,16 @@ def createcompany(company: CompanyCreate, db: Session = Depends(get_db)):
 
 
 @router.delete("/{company_id}/")
-def deletecompany(company_id: int,db: Session = Depends(get_db)):
+def deletecompany(company_id: int,db: Session = Depends(get_db),current_user=Depends(get_current_user)):
+
+    if current_user["role_id"] != 2:
+        raise HTTPException(status_code=403, detail="Only Admin can Delete Company")
+
     company_exist = db.query(Company).filter(Company.id == company_id).first()
     if not company_exist:
         raise HTTPException(status_code=404, detail="Company doesn't exist")
 
-    user_exist = db.query(User).all()
+    user_exist = db.query(User).filter(User.company_id == company_id).first()
     if user_exist:
         raise HTTPException(status_code=400, detail="User already exists")
 
