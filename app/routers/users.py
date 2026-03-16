@@ -69,10 +69,10 @@ def getusers_company(company_id: int,db: Session = Depends(get_db)):
 
 
 @router.delete("/{user_id}/")
-def deleteuser(user_id: int,  current_user_id: int=1 , db: Session = Depends(get_db),current_user=Depends(get_current_user)):
+def deleteuser(user_id: int, db: Session = Depends(get_db),current_user=Depends(get_current_user)):
 
-    if current_user["role"] != "Admin":
-        raise HTTPException(status_code=403, detail="Forbidden")
+    if current_user["role_id"] != 2:
+        raise HTTPException(status_code=403, detail="Only Admin can Delete User")
     user_exist = db.query(User).filter(User.id == user_id).first()
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")

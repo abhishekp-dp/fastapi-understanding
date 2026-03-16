@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import HTTPException
+from fastapi import HTTPException,status
 from jose import jwt, JWTError
-from rich import status
 
 from app.core.config import settings
 
