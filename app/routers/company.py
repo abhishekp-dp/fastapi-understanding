@@ -16,12 +16,19 @@ router = APIRouter(
     tags=["Company"]
 )
 
-@router.get("/", response_model=list[schemas.CompanyResponse])
-def read_company(db: Session = Depends(get_db)):
+@router.get("/", response_model=schemas.CompanyPaginationResponse)
+def read_company(page: int=1,limit: int=10 ,db: Session = Depends(get_db)):
     """
     Read all company from the database
     """
-    return crud_company.get_all_company(db)
+    companies, total = crud_company.get_all_company(db,page,limit)
+    return {
+        "page": page,
+        "limit": limit,
+        "data": companies,
+        "total": total
+
+    }
 
 @router.get("/{company_id}", response_model=schemas.CompanyResponse)
 def get_company_id(company_id : int , db: Session = Depends(get_db)):

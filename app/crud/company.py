@@ -4,8 +4,15 @@ from app.models.users import User
 from app.schemas.company import CompanyCreate
 
 
-def get_all_company(db: Session):
-    return db.query(Company).all()
+def get_all_company(db: Session,page: int,limit: int):
+
+    skip = (page-1) * limit
+    total = db.query(Company).count()
+    companies = (db.query(Company)
+             .offset(skip)
+             .limit(limit)
+             .all())
+    return companies , total
 
 def get_company_by_id(db: Session, company_id: int):
     return db.query(Company).filter(Company.id == company_id).first()
