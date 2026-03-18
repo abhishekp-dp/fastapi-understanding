@@ -21,11 +21,11 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=schemas.UserPaginationResponse)
-def read_users(page: int=1,limit: int=10 ,db: Session = Depends(get_db)):
+def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",db: Session = Depends(get_db)):
     """
     Read all users from the database
     """
-    users,total=crud_user.get_all_users(db,page,limit)
+    users,total=crud_user.get_all_users(db,page,limit,sort_by,order)
 
     return {
         "page": page,

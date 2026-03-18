@@ -1,3 +1,5 @@
+import offset
+from sqlalchemy import column, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
 
@@ -11,14 +13,30 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_all_users(db: Session,page: int,limit: int):
+def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str):
 
     skip = (page-1) * limit
-    total = db.query(User).count()
-    users = (db.query(User)
+
+    query=db.query(User)
+
+    # ✅ Allowed columns (important)
+    allowed_field =["id","name"]
+
+    if sort_by not in allowed_field:
+        sort_by = "id"
+
+    # ✅ Convert string → column
+    columns = getattr(User,sort_by)
+    if order == "desc":
+        query=query.order_by(columns.desc())
+    else:
+        query = query.order_by(columns.asc())
+
+    users = (query
              .offset(skip)
              .limit(limit)
              .all())
+    total = query.count()
     return users , total
 
 
