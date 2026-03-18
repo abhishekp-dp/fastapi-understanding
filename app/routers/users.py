@@ -20,12 +20,20 @@ router = APIRouter(
     tags=["Users"]
 )
 
-@router.get("/", response_model=list[schemas.UserResponse])
-def read_users(db: Session = Depends(get_db)):
+@router.get("/", response_model=schemas.UserPaginationResponse)
+def read_users(page: int=1,limit: int=10 ,db: Session = Depends(get_db)):
     """
     Read all users from the database
     """
-    return crud_user.get_all_users(db)
+    users,total=crud_user.get_all_users(db,page,limit)
+
+    return {
+        "page": page,
+        "limit": limit,
+        "data": users,
+        "total": total
+
+    }
 
 
 @router.post("/createuser/")

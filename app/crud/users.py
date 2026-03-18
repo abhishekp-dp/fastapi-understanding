@@ -11,9 +11,15 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_all_users(db: Session):
-    print("Abhishek")
-    return db.query(User).all()
+def get_all_users(db: Session,page: int,limit: int):
+
+    skip = (page-1) * limit
+    total = db.query(User).count()
+    users = (db.query(User)
+             .offset(skip)
+             .limit(limit)
+             .all())
+    return users , total
 
 
 def create_user(db: Session, usercreate: UserCreate):
