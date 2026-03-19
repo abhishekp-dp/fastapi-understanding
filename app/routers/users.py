@@ -21,11 +21,13 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=schemas.UserPaginationResponse)
-def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",db: Session = Depends(get_db)):
+def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",search: str=None,db: Session = Depends(get_db)):
     """
     Read all users from the database
     """
-    users,total=crud_user.get_all_users(db,page,limit,sort_by,order)
+    if page <= 0:
+        raise HTTPException(status_code=400, detail="Page does not exist")
+    users,total=crud_user.get_all_users(db,page,limit,sort_by,order,search)
 
     return {
         "page": page,

@@ -21,6 +21,8 @@ def read_company(page: int=1,limit: int=10,sort_by: str="id",order:str="asc" ,db
     """
     Read all company from the database
     """
+    if page <=0:
+        raise HTTPException(status_code=400, detail="Page does not exist")
     companies, total = crud_company.get_all_company(db,page,limit,sort_by,order)
     return {
         "page": page,

@@ -1,5 +1,5 @@
 import offset
-from sqlalchemy import column, desc
+from sqlalchemy import column, desc, or_
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
 
@@ -13,11 +13,20 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str):
+def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str,search: str):
 
     skip = (page-1) * limit
 
-    query=db.query(User)
+    query=db.query(User).join(Company, User.company_id == Company.id)
+    print(str(query.statement))
+
+    if search:
+        query = query.filter(
+                or_(User.name.ilike(f"%{search}%"),
+                 User.email.ilike(f"%{search}%"),
+                        Company.company_name.ilike(f"%{search}%")
+                 )
+        )
 
     # ✅ Allowed columns (important)
     allowed_field =["id","name"]
