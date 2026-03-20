@@ -18,7 +18,6 @@ def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str,searc
     skip = (page-1) * limit
 
     query=db.query(User).join(Company, User.company_id == Company.id)
-    print(str(query.statement))
 
     if search:
         query = query.filter(
