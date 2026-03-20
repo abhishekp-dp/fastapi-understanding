@@ -4,8 +4,31 @@ from app.models.users import User
 from app.schemas.company import CompanyCreate
 
 
-def get_all_company(db: Session):
-    return db.query(Company).all()
+def get_all_company(db: Session,page: int,limit: int,sort_by: str,order: str):
+
+    skip = (page-1) * limit
+
+    query=db.query(Company)
+
+    # ✅ Allowed columns (important)
+    allowed_field =["id","name"]
+
+    if sort_by not in allowed_field:
+        sort_by = "id"
+
+    # ✅ Convert string → column
+    columns = getattr(Company,sort_by)
+    if order == "desc":
+        query=query.order_by(columns.desc())
+    else:
+        query = query.order_by(columns.asc())
+
+    total = query.count()
+    companies = (query
+             .offset(skip)
+             .limit(limit)
+             .all())
+    return companies , total
 
 def get_company_by_id(db: Session, company_id: int):
     return db.query(Company).filter(Company.id == company_id).first()

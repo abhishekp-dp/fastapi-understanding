@@ -1,4 +1,5 @@
 from tokenize import String
+from typing import List
 
 from pydantic import BaseModel
 from app.schemas.users import UserResponse
@@ -22,6 +23,15 @@ class CompanyCreate(BaseModel):
 class CompanyUsersResponse(BaseModel):
     total_users : int
     users : list[UserResponse]
+
+    class Config:
+        from_attributes = True
+
+class CompanyPaginationResponse(BaseModel):
+    total: int
+    page: int
+    limit: int
+    data: List[CompanyResponse]
 
     class Config:
         from_attributes = True
