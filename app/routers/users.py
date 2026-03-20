@@ -84,8 +84,11 @@ def deleteuser(user_id: int, db: Session = Depends(get_db),current_user=Depends(
     if current_user["role_id"] != 2:
         raise HTTPException(status_code=403, detail="Only Admin can Delete User")
     user_exist = db.query(User).filter(User.id == user_id).first()
+
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")
+    if user_exist.role_id==2:
+        raise HTTPException(status_code=404, detail="Admin cannot Delete Admin User")
 
     #admin_check(db, current_user_id)
     delete_user(db, user_id)
