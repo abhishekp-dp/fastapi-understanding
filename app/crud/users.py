@@ -13,11 +13,14 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str,search: str):
+def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str,search: str,current_user_role: int | None,current_user_company: int | None):
 
     skip = (page-1) * limit
 
-    query=db.query(User).join(Company, User.company_id == Company.id)
+    if current_user_role != 2: #role_id=2 is admin
+        query=db.query(User).join(Company, User.company_id == Company.id).filter(Company.id == current_user_company)
+    else:
+        query = db.query(User).join(Company, User.company_id == Company.id)
 
     if search:
         query = query.filter(

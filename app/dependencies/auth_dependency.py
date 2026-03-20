@@ -11,7 +11,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)): #here depends on oaut
 
     user_id = payload.get("user_id")  # From that user id fetches that who made the request for eg {
                                                                                                     #  "user_id": 7,
-                                                                                                    #  "role": "admin",
+                                                                                        #  "role": "admin",
     print(user_id)                                                                                          #  "exp": 1710300000
                                                                                                     # }
 
