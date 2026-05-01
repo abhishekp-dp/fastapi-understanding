@@ -2,7 +2,10 @@ from sqlalchemy.orm import Session
 from app.models.company import Company  # ✅ correct model import
 from app.models.users import User
 from app.schemas.company import CompanyCreate
+from app.crud.base import CRUDBase
 
+base_company=CRUDBase(Company)
+base_users=CRUDBase(User)
 
 def get_all_company(db: Session,page: int,limit: int,sort_by: str,order: str):
 
@@ -31,7 +34,7 @@ def get_all_company(db: Session,page: int,limit: int,sort_by: str,order: str):
     return companies , total
 
 def get_company_by_id(db: Session, company_id: int):
-    return db.query(Company).filter(Company.id == company_id).first()
+    return base_company.get_one(db,company_id)
 
 def create_company(db: Session, company: CompanyCreate):
     # Step 1: Create object
@@ -50,7 +53,7 @@ def create_company(db: Session, company: CompanyCreate):
     return new_company
 
 def delete_company(db: Session, company_id: int):
-    company_delete = db.query(Company).filter(Company.id == company_id).first()
+    company_delete = base_company.get_one(db, company_id)
     db.delete(company_delete)
     db.commit()
 

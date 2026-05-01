@@ -7,11 +7,13 @@ from app.models.users import User  # ✅ correct model import
 from app.models.company import Company
 from app.schemas.users import UserCreate
 from app.core.security import hash_password
+from app.crud.base import CRUDBase
+
+base_user=CRUDBase(User)
 
 
 def get_user_by_id(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
-
+    return base_user.get_one(db, user_id)
 
 def get_all_users(db: Session,page: int,limit: int,sort_by: str,order: str,search: str,current_user_role: int | None,current_user_company: int | None):
 
@@ -85,6 +87,6 @@ def get_user_by_company (db: Session, company_id: int):
     return companyusers
 
 def delete_user(db: Session, user_id: int):
-    user_delete = db.query(User).filter(User.id == user_id).first()
+    user_delete = base_user.get_one(db, user_id)
     db.delete(user_delete)
     db.commit()

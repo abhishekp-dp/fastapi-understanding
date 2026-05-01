@@ -34,13 +34,12 @@ def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",sear
 
 
     return {
-        "page": page,
+        "page": page,   
         "limit": limit,
         "data": users,
         "total": total
 
     }
-
 
 @router.post("/createuser/")
 def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
@@ -69,6 +68,9 @@ def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def getuser(user_id : int , db: Session = Depends(get_db)):
+    if user_id <= 0:
+        raise HTTPException(status_code=404 , detail="Enter ID more than 0")
+
     user = get_user_by_id(db,user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
