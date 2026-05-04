@@ -21,22 +21,25 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=schemas.UserPaginationResponse)
-def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",search: str=None,db: Session = Depends(get_db)):
+def read_users(page: int=1,limit: int=10 ,sort_by: str="id",order:str="asc",search: str=None,current_user=Depends(get_current_user),db: Session = Depends(get_db)):
     """
     Read all users from the database
     """
     if page <= 0:
         raise HTTPException(status_code=400, detail="Page does not exist")
-    users,total=crud_user.get_all_users(db,page,limit,sort_by,order,search)
+    current_user_company = current_user["company_id"]
+    current_user_role = current_user["role_id"]
+
+    users,total=crud_user.get_all_users(db,page,limit,sort_by,order,search,current_user_role,current_user_company)
+
 
     return {
-        "page": page,
+        "page": page,   
         "limit": limit,
         "data": users,
         "total": total
 
     }
-
 
 @router.post("/createuser/")
 def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
@@ -65,6 +68,9 @@ def createusers( usercreate: UserCreate,db: Session = Depends(get_db)):
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def getuser(user_id : int , db: Session = Depends(get_db)):
+    if user_id <= 0:
+        raise HTTPException(status_code=404 , detail="Enter ID more than 0")
+
     user = get_user_by_id(db,user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -84,8 +90,11 @@ def deleteuser(user_id: int, db: Session = Depends(get_db),current_user=Depends(
     if current_user["role_id"] != 2:
         raise HTTPException(status_code=403, detail="Only Admin can Delete User")
     user_exist = db.query(User).filter(User.id == user_id).first()
+
     if not user_exist:
         raise HTTPException(status_code=404, detail="User doesn't exist")
+    if user_exist.role_id==2:
+        raise HTTPException(status_code=404, detail="Admin cannot Delete Admin User")
 
     #admin_check(db, current_user_id)
     delete_user(db, user_id)

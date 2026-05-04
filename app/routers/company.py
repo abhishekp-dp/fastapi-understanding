@@ -34,6 +34,8 @@ def read_company(page: int=1,limit: int=10,sort_by: str="id",order:str="asc" ,db
 
 @router.get("/{company_id}", response_model=schemas.CompanyResponse)
 def get_company_id(company_id : int , db: Session = Depends(get_db)):
+    if company_id <=0:
+        raise HTTPException(status_code=400, detail="Enter company id more than 0")
     company = get_company_by_id(db,company_id)
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
